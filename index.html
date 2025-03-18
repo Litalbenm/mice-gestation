@@ -8,79 +8,69 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
             padding: 20px;
-        }
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            max-width: 300px;
-            margin: 20px auto;
-        }
-        .day {
-            padding: 10px;
             border: 1px solid #ccc;
-            text-align: center;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
         }
-        .pink { background-color: pink; }
-        .blue { background-color: lightblue; }
-        .white { background-color: white; }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .credit {
+            margin-top: 20px;
+            font-size: 12px;
+            color: gray;
+        }
     </style>
 </head>
 <body>
-    <h2>Mice Gestational Day Calculator</h2>
-    <p>Credit: Lital Ben Moyal, Neeman lab</p>
-    
-    <label for="matingDate">Select Mating Date:</label>
-    <input type="date" id="matingDate">
-    <button onclick="calculateGestation()">Calculate</button>
-    
-    <h3>Gestational Calendar</h3>
-    <div class="calendar" id="calendar"></div>
-    
-    <h3>Reverse Calculator</h3>
-    <label for="scanningDate">Select Scanning Date:</label>
-    <input type="date" id="scanningDate">
-    <label for="desiredGestation">Desired Gestational Day (e.g., E17.5):</label>
-    <input type="number" id="desiredGestation" step="0.5">
-    <button onclick="calculateMatingDate()">Calculate Mating Date</button>
-    <p id="matingResult"></p>
-    
+
+    <div class="container">
+        <h2>Mice Gestational Day Calculator</h2>
+        <label for="matingDate">Mating Date:</label>
+        <input type="date" id="matingDate">
+
+        <label for="gestationalDay">Desired Gestational Day (e.g., 16.5):</label>
+        <input type="number" id="gestationalDay" step="0.5" min="0.5">
+
+        <button onclick="calculateDate()">Calculate</button>
+
+        <div id="result"></div>
+        <div class="credit">Created by Lital, Neeman lab</div>
+    </div>
+
     <script>
-        function calculateGestation() {
-            let matingDate = new Date(document.getElementById("matingDate").value);
-            if (isNaN(matingDate)) return alert("Please select a valid mating date");
-            
-            let calendarDiv = document.getElementById("calendar");
-            calendarDiv.innerHTML = "";
-            
-            for (let i = 0; i <= 20; i++) {
-                let date = new Date(matingDate);
-                date.setDate(date.getDate() + i);
-                let dayDiv = document.createElement("div");
-                dayDiv.className = "day";
-                
-                if (i === 16) {
-                    dayDiv.classList.add("pink"); // Gestational day (default E16.5)
-                } else {
-                    dayDiv.classList.add("white");
-                }
-                
-                dayDiv.textContent = `E${i - 0.5} \n ${date.toLocaleDateString()}`;
-                calendarDiv.appendChild(dayDiv);
+        function calculateDate() {
+            let matingDate = document.getElementById("matingDate").value;
+            let gestationalDay = parseFloat(document.getElementById("gestationalDay").value);
+
+            if (!matingDate || isNaN(gestationalDay) || gestationalDay < 0.5) {
+                document.getElementById("result").innerHTML = "Please enter a valid date and gestational day.";
+                return;
             }
-        }
-        
-        function calculateMatingDate() {
-            let scanningDate = new Date(document.getElementById("scanningDate").value);
-            let desiredGestation = parseFloat(document.getElementById("desiredGestation").value);
-            if (isNaN(scanningDate) || isNaN(desiredGestation)) return alert("Please select valid inputs");
-            
-            let matingDate = new Date(scanningDate);
-            matingDate.setDate(matingDate.getDate() - Math.ceil(desiredGestation));
-            
-            document.getElementById("matingResult").textContent = `Mating should occur on: ${matingDate.toLocaleDateString()}`;
+
+            let mating = new Date(matingDate);
+            let targetDate = new Date(mating);
+            targetDate.setDate(targetDate.getDate() + Math.floor(gestationalDay) + 1);
+
+            let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById("result").innerHTML = 
+                `E${gestationalDay} falls on <br><strong>${targetDate.toLocaleDateString('en-GB', options)}</strong>`;
         }
     </script>
+
 </body>
 </html>
