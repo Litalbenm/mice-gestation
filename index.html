@@ -8,83 +8,78 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            padding: 20px;
         }
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 5px;
-            width: 300px;
+            max-width: 300px;
             margin: 20px auto;
         }
         .day {
             padding: 10px;
             border: 1px solid #ccc;
+            text-align: center;
         }
-        .pregnancy-day {
-            background-color: pink;
-        }
-        .scan-day {
-            background-color: lightblue;
-        }
+        .pink { background-color: pink; }
+        .blue { background-color: lightblue; }
+        .white { background-color: white; }
     </style>
 </head>
 <body>
-    <h1>Mice Gestational Day Calculator</h1>
+    <h2>Mice Gestational Day Calculator</h2>
+    <p>Credit: Lital Ben Moyal, Neeman lab</p>
+    
     <label for="matingDate">Select Mating Date:</label>
     <input type="date" id="matingDate">
+    <button onclick="calculateGestation()">Calculate</button>
     
-    <label for="scanDay">Select Preferred Scanning Day (E value):</label>
-    <input type="number" id="scanDay" min="0" max="20">
-    
-    <button onclick="calculateDates()">Calculate</button>
-    
-    <h2>Gestational Calendar</h2>
+    <h3>Gestational Calendar</h3>
     <div class="calendar" id="calendar"></div>
     
-    <h2>Required Mating Date for Desired Scan Day</h2>
+    <h3>Reverse Calculator</h3>
+    <label for="scanningDate">Select Scanning Date:</label>
+    <input type="date" id="scanningDate">
+    <label for="desiredGestation">Desired Gestational Day (e.g., E17.5):</label>
+    <input type="number" id="desiredGestation" step="0.5">
+    <button onclick="calculateMatingDate()">Calculate Mating Date</button>
     <p id="matingResult"></p>
     
     <script>
-        function calculateDates() {
-            const matingDateInput = document.getElementById("matingDate").value;
-            const scanDayInput = parseInt(document.getElementById("scanDay").value, 10);
-            const calendarDiv = document.getElementById("calendar");
-            const matingResult = document.getElementById("matingResult");
+        function calculateGestation() {
+            let matingDate = new Date(document.getElementById("matingDate").value);
+            if (isNaN(matingDate)) return alert("Please select a valid mating date");
             
-            if (!matingDateInput) {
-                alert("Please select a mating date.");
-                return;
-            }
-            
-            const matingDate = new Date(matingDateInput);
-            const calendarDays = [];
+            let calendarDiv = document.getElementById("calendar");
+            calendarDiv.innerHTML = "";
             
             for (let i = 0; i <= 20; i++) {
-                let currentDay = new Date(matingDate);
-                currentDay.setDate(currentDay.getDate() + i);
-                calendarDays.push({
-                    date: currentDay,
-                    label: `E${i}.5`,
-                    isPregnancy: true,
-                    isScan: i === scanDayInput
-                });
-            }
-            
-            calendarDiv.innerHTML = "";
-            calendarDays.forEach(day => {
-                const dayDiv = document.createElement("div");
-                dayDiv.classList.add("day");
-                if (day.isPregnancy) dayDiv.classList.add("pregnancy-day");
-                if (day.isScan) dayDiv.classList.add("scan-day");
-                dayDiv.innerHTML = `${day.label} <br> ${day.date.toDateString()}`;
+                let date = new Date(matingDate);
+                date.setDate(date.getDate() + i);
+                let dayDiv = document.createElement("div");
+                dayDiv.className = "day";
+                
+                if (i === 16) {
+                    dayDiv.classList.add("pink"); // Gestational day (default E16.5)
+                } else {
+                    dayDiv.classList.add("white");
+                }
+                
+                dayDiv.textContent = `E${i - 0.5} \n ${date.toLocaleDateString()}`;
                 calendarDiv.appendChild(dayDiv);
-            });
-            
-            if (!isNaN(scanDayInput)) {
-                let requiredMatingDate = new Date(matingDate);
-                requiredMatingDate.setDate(requiredMatingDate.getDate() - scanDayInput);
-                matingResult.innerText = `To have the desired scan on E${scanDayInput}.5, the required mating date is: ${requiredMatingDate.toDateString()}`;
             }
+        }
+        
+        function calculateMatingDate() {
+            let scanningDate = new Date(document.getElementById("scanningDate").value);
+            let desiredGestation = parseFloat(document.getElementById("desiredGestation").value);
+            if (isNaN(scanningDate) || isNaN(desiredGestation)) return alert("Please select valid inputs");
+            
+            let matingDate = new Date(scanningDate);
+            matingDate.setDate(matingDate.getDate() - Math.ceil(desiredGestation));
+            
+            document.getElementById("matingResult").textContent = `Mating should occur on: ${matingDate.toLocaleDateString()}`;
         }
     </script>
 </body>
