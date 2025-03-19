@@ -22,11 +22,11 @@
             border: 1px solid #ccc;
             text-align: center;
             font-size: 12px;
+            background-color: white;
         }
         .pink { background-color: pink; }
         .blue { background-color: lightblue; }
         .red { background-color: red; color: white; }
-        .white { background-color: white; }
     </style>
 </head>
 <body>
@@ -68,7 +68,7 @@
                 let date = new Date(matingDate);
                 date.setDate(date.getDate() + i);
                 let dayDiv = document.createElement("div");
-                dayDiv.className = "day white";
+                dayDiv.className = "day";
                 
                 if (i === 0) {
                     dayDiv.classList.add("red"); // Mating day
