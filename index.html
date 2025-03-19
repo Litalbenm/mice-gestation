@@ -68,13 +68,13 @@
                 let date = new Date(matingDate);
                 date.setDate(date.getDate() + i);
                 let dayDiv = document.createElement("div");
-                dayDiv.className = "day";
+                dayDiv.className = "day white";
                 
                 if (i === 0) {
                     dayDiv.classList.add("red"); // Mating day
-                } else if (i === gestationDay) {
+                } else if (i === Math.ceil(gestationDay)) {
                     dayDiv.classList.add("blue"); // Scanning day
-                } else {
+                } else if (i <= gestationDay) {
                     dayDiv.classList.add("pink"); // Gestational days
                 }
                 
